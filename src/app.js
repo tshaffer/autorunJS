@@ -158,6 +158,11 @@ export default class App {
         sysInfo.deviceFamily = deviceInfo.family;
         sysInfo.enableLogDeletion = true;
 
+        const networkConfiguration = this.getNetworkConfiguration();
+        sysInfo.ipAddressWired = networkConfiguration.ipAddressWired;
+        sysInfo.modelSupportsWifi = networkConfiguration.modelSupportsWifi;
+        sysInfo.ipAddressWireless = networkConfiguration.ipAddressWireless;
+
         return sysInfo;
     }
 
@@ -168,6 +173,7 @@ export default class App {
 
         if (this.isBrightSign) {
             deviceInfo = new BSDeviceInfo();
+            // doesn't support versionNumber currently
         }
         else {
             deviceInfo.model = "XT1143";
@@ -178,5 +184,23 @@ export default class App {
         }
 
         return deviceInfo;
+    }
+
+    getNetworkConfiguration() {
+
+        let networkConfiguration = {};
+
+        // if (this.isBrightSign) {
+        //
+        // }
+        // else {
+        //
+        // }
+
+        networkConfiguration.ipAddressWired = "192.168.0.110";
+        networkConfiguration.modelSupportsWifi = false;
+        networkConfiguration.ipAddressWireless = "";
+
+        return networkConfiguration;
     }
 }
