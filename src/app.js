@@ -6,8 +6,14 @@ const xml2js = require('xml2js');
 export default class App {
 
     constructor() {
+
+        this.isBrightSign = false;
+
         console.log("instantiate app");
         console.log("attach debugger now");
+
+        this.autorunVersion= "8.0.0"; // BA 5.0.0
+        this.customAutorunVersion = "8.0.0";
         setTimeout( () => {
             this.run();
         }, 1000);
@@ -16,14 +22,16 @@ export default class App {
     run() {
 
         console.log("run app");
-        const autorunVersion = "8.0.0"; // BA 5.0.0
-        const customAutorunVersion = "8.0.0";
 
         let enableDebuggingPromise = this.enableDebugging();
         enableDebuggingPromise.then( (debugParamsFromSyncSpec) => {
             const debugParams = debugParamsFromSyncSpec;
             console.log("DebugParams", debugParams);
         });
+
+        let sysInfo = this.getSysInfo();
+        console.log("sysInfo");
+        console.log(sysInfo);
 
         // start video playback
         // const v = document.getElementsByTagName("video")[0];
@@ -61,12 +69,6 @@ export default class App {
                     enableSystemLogDebugging = true;
                 }
 
-                console.log(syncSpec);
-                console.log(meta);
-                console.log(clientData);
-                console.log(enableSerialDebugging);
-                console.log(enableSystemLogDebugging);
-
                 debugParams.serialDebugOn = enableSerialDebugging;
                 debugParams.systemLogDebugOn = enableSystemLogDebugging;
 
@@ -99,11 +101,13 @@ export default class App {
 
     readAppFile(filePath) {
 
-        // BrightSign version
-        // const appPath = path.join(__dirname, "storage", "sd");
-
-        // Electron emulation version
-        const appPath = "/Users/tedshaffer/Documents/Projects/autorunJS";
+        let appPath = "";
+        if (this.isBrightSign) {
+            appPath = path.join(__dirname, "storage", "sd");
+        }
+        else {
+            appPath = "/Users/tedshaffer/Documents/Projects/autorunJS";
+        }
 
         const fullPath = path.join(appPath, filePath);
 
@@ -136,5 +140,43 @@ export default class App {
                 resolve(jsonResult);
             });
         });
+    }
+
+    getSysInfo() {
+
+        const deviceInfo = this.getDeviceInfo();
+
+        let sysInfo = {};
+
+        sysInfo.autorunVersion = this.autorunVersion;
+        sysInfo.customAutorunVersion = this.customAutorunVersion;
+        sysInfo.deviceUniqueId = deviceInfo.deviceUniqueId;
+        sysInfo.deviceFWVersion = deviceInfo.version;
+        sysInfo.deviceFWVersionNumber = deviceInfo.versionNumber;
+
+        sysInfo.deviceModel = deviceInfo.model;
+        sysInfo.deviceFamily = deviceInfo.family;
+        sysInfo.enableLogDeletion = true;
+
+        return sysInfo;
+    }
+
+
+    getDeviceInfo() {
+
+        let deviceInfo = {};
+
+        if (this.isBrightSign) {
+            deviceInfo = new BSDeviceInfo();
+        }
+        else {
+            deviceInfo.model = "XT1143";
+            deviceInfo.family = "impala";
+            deviceInfo.deviceUniqueId = "L8C67L000084";
+            deviceInfo.version = "6.2.60-chronode-2016-10-26";
+            deviceInfo.versionNumber = 393788;
+        }
+
+        return deviceInfo;
     }
 }
