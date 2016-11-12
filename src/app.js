@@ -26,10 +26,10 @@ export default class App {
         });
 
         // start video playback
-        const v = document.getElementsByTagName("video")[0];
-        console.log("v");
-        console.log(v);
-        v.play();
+        // const v = document.getElementsByTagName("video")[0];
+        // console.log("v");
+        // console.log(v);
+        // v.play();
     }
 
     enableDebugging() {
@@ -48,8 +48,18 @@ export default class App {
                 const syncSpec = syncSpecContainer.sync;
                 const meta = syncSpec.meta[0];
                 const clientData = meta.client[0];
-                const enableSerialDebugging = clientData.enableSerialDebugging;
-                const enableSystemLogDebugging = clientData.enableSystemLogDebugging;
+
+                let enableSerialDebugging = false;
+                const enableSerialDebuggingAsArray = clientData.enableSerialDebugging;
+                if (enableSerialDebuggingAsArray instanceof Array && enableSerialDebuggingAsArray.length === 1 && enableSerialDebuggingAsArray[0] === 'True') {
+                    enableSerialDebugging = true;
+                }
+
+                let enableSystemLogDebugging = false;
+                const enableSystemLogDebuggingAsArray = clientData.enableSystemLogDebugging;
+                if (enableSystemLogDebuggingAsArray instanceof Array && enableSystemLogDebuggingAsArray.length === 1 && enableSystemLogDebuggingAsArray[0] === 'True') {
+                    enableSystemLogDebugging = true;
+                }
 
                 console.log(syncSpec);
                 console.log(meta);
@@ -89,7 +99,12 @@ export default class App {
 
     readAppFile(filePath) {
 
-        const appPath = path.join(__dirname, "storage", "sd");
+        // BrightSign version
+        // const appPath = path.join(__dirname, "storage", "sd");
+
+        // Electron emulation version
+        const appPath = "/Users/tedshaffer/Documents/Projects/autorunJS";
+
         const fullPath = path.join(appPath, filePath);
 
         return new Promise( (resolve, reject) => {
