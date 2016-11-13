@@ -3,6 +3,8 @@ const path = require('path');
 
 const xml2js = require('xml2js');
 
+import DiagnosticCodes from './diagnosticCodes';
+
 export default class App {
 
     constructor() {
@@ -24,7 +26,7 @@ export default class App {
         console.log("run app");
 
         let enableDebuggingPromise = this.enableDebugging();
-        enableDebuggingPromise.then( (debugParamsFromSyncSpec) => {
+        enableDebuggingPromise.then((debugParamsFromSyncSpec) => {
             const debugParams = debugParamsFromSyncSpec;
             console.log("DebugParams", debugParams);
         });
@@ -32,6 +34,93 @@ export default class App {
         let sysInfo = this.getSysInfo();
         console.log("sysInfo");
         console.log(sysInfo);
+
+        // videoMode = CreateObject("roVideoMode")
+        // edid = videoMode.GetEdidIdentity(true)
+        // UpdateEdidValues(edid, sysInfo)
+        // edid = invalid
+        // videoMode = invalid
+
+        // determine if the storage device is writable
+        // du = CreateObject("roStorageInfo", "./")
+        // if du.IsReadOnly() then
+        //     sysInfo.storageIsWriteProtected = true
+        // else
+        //     sysInfo.storageIsWriteProtected = false
+        // endif
+
+        this.initRemoteSnapshots(sysInfo);
+
+        // check to see whether or not the current firmware meets the minimum compatibility requirements
+        const versionNumber = sysInfo.deviceFWVersionNumber;
+        let minVersionNumber;
+        let minVersion;
+
+        if (sysInfo.deviceFamily === "pantera") {
+            minVersionNumber = 393761;
+            minVersion = "6.2.33";
+        }
+        else if (sysInfo.deviceFamily === "impala") {
+            minVersionNumber = 393761;
+            minVersion = "6.2.33";
+        }
+        else if (sysInfo.deviceFamily === "panther") {
+            minVersionNumber = 327952;
+            minVersion = "5.1.16";
+        }
+        else if (sysInfo.deviceFamily === "cheetah") {
+            minVersionNumber = 327952;
+            minVersion = "5.1.16";
+        }
+        else if (sysInfo.deviceFamily === "tiger") {
+            minVersionNumber = 327952;
+            minVersion = "5.1.16";
+        }
+        else if (sysInfo.deviceFamily === "puma") {
+            minVersionNumber = 327952;
+            minVersion = "5.1.16";
+        }
+        else if (sysInfo.deviceFamily === "bobcat") {
+            minVersionNumber = 327952;
+            minVersion = "5.1.16";
+        }
+        else if (sysInfo.deviceFamily === "lynx") {
+            minVersionNumber = 327952;
+            minVersion = "5.1.16";
+        }
+        else {   // no supported devices should hit this else
+            minVersionNumber = 199435;
+            minVersion = "3.11.11";
+        }
+
+        if (versionNumber < minVersionNumber) {
+            // videoMode = CreateObject("roVideoMode")
+            // resX = videoMode.GetResX()
+            // resY = videoMode.GetResY()
+            // videoMode = invalid
+            // r=CreateObject("roRectangle",0,resY/2-resY/64,resX,resY/32)
+            // twParams = CreateObject("roAssociativeArray")
+            // twParams.LineCount = 1
+            // twParams.TextMode = 2
+            // twParams.Rotation = 0
+            // twParams.Alignment = 1
+            // tw=CreateObject("roTextWidget",r,1,2,twParams)
+            // tw.PushString("Firmware needs to be upgraded to " + minVersion$ + " or greater")
+            // tw.Show()
+            //
+            // globalAA = GetGlobalAA()
+            // if globalAA.enableRemoteSnapshot then
+            // sleep(1000)	' sleep here ensures that graphics makes it to the screen before the snapshot is taken
+            // TakeSnapshot(systemTime, "")
+            // endif
+            //
+            // sleep(120000)
+            // RebootSystem()
+        }
+
+        const diagnosticCodes = new DiagnosticCodes();
+        console.log(diagnosticCodes);
+
 
         // start video playback
         // const v = document.getElementsByTagName("video")[0];
@@ -202,5 +291,40 @@ export default class App {
         networkConfiguration.ipAddressWireless = "";
 
         return networkConfiguration;
+    }
+
+    initRemoteSnapshots(sysInfo) {
+    //
+    //     let basePath;
+    //
+    //     if (this.isBrightSign) {
+    //         basePath = '/storage/sd';
+    //     }
+    //     else {
+    //         basePath = '/Users/tedshaffer/Documents/Projects/autorunJS';
+    //     }
+    //
+    //     const dirPath = path.join(basePath, 'snapshots');
+    //     fs.mkdirSync(dirPath);  // fails if storage is write protected or formatted as ntfs, but ignore return value at this point
+    //
+    //     // ' setup snapshot capability as early as possible
+    //     // registrySection = CreateObject("roRegistrySection", "networking")
+    //     // if type(registrySection)<>"roRegistrySection" then print "Error: Unable to create roRegistrySection":stop
+    //
+    //     this.enableRemoteSnapshot = false
+    //     if lcase(registrySection.Read("enableRemoteSnapshot")) = "yes" then
+    //     if sysInfo.storageIsWriteProtected then DisplayStorageDeviceLockedMessage()
+    //     globalAA.enableRemoteSnapshot = true
+    //     globalAA.remoteSnapshotInterval = int(val(registrySection.Read("remoteSnapshotInterval")))
+    //     globalAA.remoteSnapshotMaxImages = int(val(registrySection.Read("remoteSnapshotMaxImages")))
+    //     globalAA.remoteSnapshotJpegQualityLevel = int(val(registrySection.Read("remoteSnapshotJpegQualityLevel")))
+    //     globalAA.remoteSnapshotDisplayPortrait = GetBoolFromString("remoteSnapshotDisplayPortrait", false)
+    //     endif
+    //
+    //     registrySection = invalid
+    //
+    //     ' generate list of snapshots currently on card
+    //     globalAA.listOfSnapshotFiles = MatchFiles("/snapshots/", "*.jpg")
+    //     BubbleSortFileNames(globalAA.listOfSnapshotFiles)
     }
 }
