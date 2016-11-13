@@ -28,7 +28,12 @@ export default class App {
         let enableDebuggingPromise = this.enableDebugging();
         enableDebuggingPromise.then((debugParamsFromSyncSpec) => {
             const debugParams = debugParamsFromSyncSpec;
-            console.log("DebugParams", debugParams);
+
+            let sysFlags = {};
+            sysFlags.debugOn = debugParams.serialDebugOn;
+            sysFlags.systemLogDebugOn = debugParams.systemLogDebugOn;
+            console.log("sysFlags");
+            console.log(sysFlags);
         });
 
         let sysInfo = this.getSysInfo();
@@ -121,6 +126,8 @@ export default class App {
         const diagnosticCodes = new DiagnosticCodes();
         console.log(diagnosticCodes);
 
+// wait for enableDebuggingPromise
+//         RunBsp(sysFlags, sysInfo, diagnosticCodes, systemTime)
 
         // start video playback
         // const v = document.getElementsByTagName("video")[0];
